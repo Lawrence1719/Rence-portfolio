@@ -10,17 +10,32 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Rence | Full Stack Developer",
-  description: "My porftolio",
-   icons: {
+  description: "My portfolio",
+  icons: {
     icon: [
-      { url: '/images/Logo.png', sizes: '16x16', type: 'image/png' },
-      { url: '/images/Logo.png', sizes: '32x32', type: 'image/png' },
-      { url: '/images/Logo.png', sizes: '96x96', type: 'image/png' },
+      { url: 'images/favicon.ico', sizes: 'any' },
+      { url: 'images/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: 'images/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
-      { url: '/images/Logo.png', sizes: '180x180', type: 'image/png' },
+      { url: 'images/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        url: 'images/android-chrome-192x192.png',
+        sizes: '192x192',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        url: 'images/android-chrome-512x512.png',
+        sizes: '512x512',
+      },
     ],
   },
+  manifest: 'images/site.webmanifest', // Link your webmanifest file
   generator: 'v0.app'
 }
 
