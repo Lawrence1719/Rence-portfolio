@@ -1,7 +1,10 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-// Don't initialize Resend at module level - do it inside the handler
+// Force dynamic rendering - don't try to build this at compile time
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: Request) {
   try {
     // Check if API key exists
