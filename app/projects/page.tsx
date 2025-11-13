@@ -37,7 +37,7 @@ const projects = [
     title: "CalculaStats",
     description: "Statistics Calculator",
     tech: ["React", "TypeScript", "Tailwind CSS", "Vite", "Git", "Vercel"],
-    link: "https://calcula-stats-fynsymh0b-lawrence1719s-projects.vercel.app/",
+    link: "https://calcula-stats.vercel.app/",
     github: "https://github.com/Lawrence1719/CalculaStats",
     inProgress: false,
   },

@@ -136,13 +136,12 @@ export default function Home() {
             className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
             {/* Stat Card 1 */}
-            {/* Stat Card 1 */}
             <div className="border border-green-400/40 rounded-lg bg-background/30 backdrop-blur-sm p-8 text-center hover:border-green-400/70 transition-colors">
               <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">
-                2
+                10k+
               </div>
               <div className="text-sm md:text-base font-mono text-muted-foreground">
-                Deployed Projects
+                Lines of Code
               </div>
             </div>
 
