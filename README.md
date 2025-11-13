@@ -1,2 +1,0 @@
-# Rence-portfolio
-My portfolio
