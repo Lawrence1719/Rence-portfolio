@@ -31,6 +31,7 @@ export default function Contact() {
     name: "",
     email: "",
     message: "",
+    website: "", // Honeypot field
   })
   const [submitted, setSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -56,14 +57,18 @@ export default function Contact() {
       console.log('Response:', data)
 
       if (!response.ok) {
+        // Handle rate limit error specifically
+        if (response.status === 429) {
+          throw new Error(data.error || 'Too many attempts. Please try again in an hour.')
+        }
         throw new Error(data.error || 'Failed to send message')
       }
 
       setSubmitted(true)
       setTimeout(() => {
         setSubmitted(false)
-        setFormState({ name: "", email: "", message: "" })
-      }, 3000)
+        setFormState({ name: "", email: "", message: "", website: "" })
+      }, 5000) // Increased timeout so user can see success message longer
     } catch (err) {
       console.error('Error:', err)
       setError(err instanceof Error ? err.message : 'Failed to send message')
@@ -96,8 +101,22 @@ export default function Contact() {
           <motion.form
             variants={itemVariants}
             onSubmit={handleSubmit}
-            className="p-8 border border-border rounded bg-card space-y-6"
+            className="p-8 border border-border rounded bg-card space-y-6 relative"
           >
+            {/* Honeypot Field - Hidden from real users */}
+            <div className="absolute left-[-9999px] opacity-0">
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={formState.website}
+                onChange={(e) => setFormState({ ...formState, website: e.target.value })}
+              />
+            </div>
+
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-mono text-primary">
                 Name
@@ -111,6 +130,8 @@ export default function Contact() {
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Your name"
                 disabled={isLoading}
+                minLength={2}
+                maxLength={100}
               />
             </div>
 
@@ -127,6 +148,7 @@ export default function Contact() {
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="your@email.com"
                 disabled={isLoading}
+                maxLength={100}
               />
             </div>
 
@@ -143,13 +165,32 @@ export default function Contact() {
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                 placeholder="Tell me about your project..."
                 disabled={isLoading}
+                minLength={10}
+                maxLength={2000}
               />
+              <div className="text-xs text-muted-foreground text-right">
+                {formState.message.length}/2000
+              </div>
             </div>
 
             {error && (
-              <div className="p-3 border border-red-500/50 bg-red-500/10 rounded text-red-500 text-sm">
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 border border-red-500/50 bg-red-500/10 rounded text-red-500 text-sm"
+              >
                 {error}
-              </div>
+              </motion.div>
+            )}
+
+            {submitted && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 border border-green-500/50 bg-green-500/10 rounded text-green-500 text-sm"
+              >
+                ✓ Message sent successfully! I'll get back to you soon.
+              </motion.div>
             )}
 
             <motion.button
@@ -159,7 +200,20 @@ export default function Contact() {
               disabled={isLoading || submitted}
               className="w-full px-6 py-3 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all font-mono text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Sending..." : submitted ? "✓ Message Sent!" : "Send Message"}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"
+                  />
+                  Sending...
+                </span>
+              ) : submitted ? (
+                "✓ Message Sent!"
+              ) : (
+                "Send Message"
+              )}
             </motion.button>
           </motion.form>
         </motion.section>
