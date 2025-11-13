@@ -1,55 +1,55 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ExternalLink, Github, Code2 } from "lucide-react"
-import Link from "next/link"
+import { motion } from "framer-motion";
+import { ExternalLink, Github, Code2 } from "lucide-react";
+import Link from "next/link";
 
 const projects = [
   {
-    title: "E-Commerce Platform",
+    title: "Never Stop Dreaming Trading",
     description:
-      "Full-stack e-commerce solution with real-time inventory, payment processing, and analytics dashboard.",
-    tech: ["Next.js", "TypeScript", "Stripe", "PostgreSQL", "Tailwind CSS"],
-    link: "#",
-    github: "#",
+      "A web-based IoT inventory and e-commerce platform for a small grocery business. It connects real-time IoT sensors with a Supabase backend to monitor stock and automate restocking alerts.",
+    tech: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS",
+      "Supabase",
+      "Node.js",
+      "Express",
+      "shadcn/ui",
+    ],
+    link: "https://never-stop-dreaming.vercel.app",
+    github: "https://github.com/Lawrence1719/never-stop-dreaming-frontend",
     featured: true,
+    inProgress: true,
+    image: "/images/ProjectImage.png",
   },
   {
-    title: "Task Management App",
-    description: "Collaborative task management with real-time updates, team features, and notifications.",
-    tech: ["React", "Firebase", "Framer Motion", "Tailwind CSS"],
-    link: "#",
-    github: "#",
+    title: "Subverb-ify",
+    description: "Interactive Educational Website.",
+    tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "ESLint"],
+    link: "https://subverb-ify.vercel.app/",
+    github: "https://github.com/Lawrence1719/Subverb-ify-frontend",
+    inProgress: true, // This is marked as work in progress
   },
   {
-    title: "Design System",
-    description: "Comprehensive component library with Storybook documentation and accessible components.",
-    tech: ["React", "Storybook", "Tailwind CSS", "TypeScript"],
-    link: "#",
-    github: "#",
+    title: "CalculaStats",
+    description: "Statistics Calculator",
+    tech: ["React", "TypeScript", "Tailwind CSS", "Vite", "Git", "Vercel"],
+    link: "https://calcula-stats-fynsymh0b-lawrence1719s-projects.vercel.app/",
+    github: "https://github.com/Lawrence1719/CalculaStats",
+    inProgress: false,
   },
   {
-    title: "Analytics Dashboard",
-    description: "Real-time data visualization dashboard with custom charts and interactive reports.",
-    tech: ["Next.js", "Recharts", "PostgreSQL", "Vercel"],
-    link: "#",
-    github: "#",
+    title: "ArraySort",
+    description: "Simple array sorting.",
+    tech: ["HTML", "CSS", "JavaScript"],
+    link: "https://array-sort-mu.vercel.app/",
+    github: "https://github.com/Lawrence1719/ArraySort",
+    inProgress: false, // This is marked as work in progress
   },
-  {
-    title: "Mobile App",
-    description: "Cross-platform mobile application for task tracking with offline support.",
-    tech: ["React Native", "Redux", "TypeScript", "Firebase"],
-    link: "#",
-    github: "#",
-  },
-  {
-    title: "API Documentation",
-    description: "Interactive API documentation with live examples and code generation.",
-    tech: ["Next.js", "MDX", "OpenAPI", "Tailwind CSS"],
-    link: "#",
-    github: "#",
-  },
-]
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -60,7 +60,7 @@ const containerVariants = {
       delayChildren: 0.2,
     },
   },
-}
+};
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -69,22 +69,34 @@ const itemVariants = {
     y: 0,
     transition: { duration: 0.8 },
   },
-}
+};
 
 export default function Projects() {
-  const featuredProject = projects.find((p) => p.featured)
-  const otherProjects = projects.filter((p) => !p.featured)
+  const featuredProject = projects.find((p) => p.featured);
+  const otherProjects = projects.filter((p) => !p.featured);
 
   return (
     <div className="pt-24 pb-12">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="mb-20">
-          <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl font-bold mb-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="mb-20"
+        >
+          <motion.h1
+            variants={itemVariants}
+            className="text-5xl md:text-6xl font-bold mb-6"
+          >
             Featured <span className="text-primary glow-text">Projects</span>
           </motion.h1>
-          <motion.p variants={itemVariants} className="text-lg text-muted-foreground max-w-2xl">
-            A selection of projects I&apos;ve worked on, showcasing my skills in full-stack development and design.
+          <motion.p
+            variants={itemVariants}
+            className="text-lg text-muted-foreground max-w-2xl"
+          >
+            A selection of projects I&apos;ve worked on, showcasing my skills in
+            full-stack development and design.
           </motion.p>
         </motion.div>
 
@@ -98,8 +110,12 @@ export default function Projects() {
           >
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h2 className="text-3xl font-bold mb-4">{featuredProject.title}</h2>
-                <p className="text-muted-foreground mb-6 leading-relaxed">{featuredProject.description}</p>
+                <h2 className="text-3xl font-bold mb-4">
+                  {featuredProject.title}
+                </h2>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  {featuredProject.description}
+                </p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {featuredProject.tech.map((t) => (
                     <span
@@ -110,25 +126,39 @@ export default function Projects() {
                     </span>
                   ))}
                 </div>
-                <div className="flex gap-4">
-                  <a
-                    href={featuredProject.link}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-sm font-mono"
-                  >
-                    View Live
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                  <a
-                    href={featuredProject.github}
-                    className="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-sm font-mono"
-                  >
-                    Code
-                    <Github className="w-4 h-4" />
-                  </a>
-                </div>
+                {featuredProject.inProgress ? (
+                  <div className="flex items-center justify-center py-3 px-6 text-sm font-mono text-muted-foreground border border-dashed border-border rounded bg-muted/30">
+                    🚧 Work in Progress
+                  </div>
+                ) : (
+                  <div className="flex gap-4">
+                    <a
+                      href={featuredProject.link}
+                      className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-sm font-mono"
+                    >
+                      View Live
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                    <a
+                      href={featuredProject.github}
+                      className="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-sm font-mono"
+                    >
+                      Code
+                      <Github className="w-4 h-4" />
+                    </a>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded border border-border/50">
-                <Code2 className="w-20 h-20 text-primary/50" />
+              <div className="relative flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded border border-border/50 overflow-hidden">
+                {featuredProject.image ? (
+                  <img
+                    src={featuredProject.image}
+                    alt={featuredProject.title}
+                    className="w-full h-full object-cover rounded"
+                  />
+                ) : (
+                  <Code2 className="w-20 h-20 text-primary/50" />
+                )}
               </div>
             </div>
           </motion.section>
@@ -151,7 +181,9 @@ export default function Projects() {
               className="p-6 border border-border rounded bg-card hover:shadow-lg hover:shadow-primary/10 transition-all flex flex-col"
             >
               <h3 className="text-xl font-bold mb-3">{project.title}</h3>
-              <p className="text-muted-foreground text-sm mb-4 flex-1">{project.description}</p>
+              <p className="text-muted-foreground text-sm mb-4 flex-1">
+                {project.description}
+              </p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.tech.map((t) => (
                   <span
@@ -162,22 +194,30 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
-              <div className="flex gap-3">
-                <a
-                  href={project.link}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-xs font-mono"
-                >
-                  View
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-                <a
-                  href={project.github}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-xs font-mono"
-                >
-                  Code
-                  <Github className="w-3 h-3" />
-                </a>
-              </div>
+              {project.inProgress ? (
+                <div className="flex items-center justify-center py-2 text-xs font-mono text-muted-foreground border border-dashed border-border rounded">
+                  🚧 Work in Progress
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-xs font-mono"
+                  >
+                    View
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-xs font-mono"
+                  >
+                    Code
+                    <Github className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
             </motion.div>
           ))}
         </motion.section>
@@ -192,7 +232,8 @@ export default function Projects() {
         >
           <h2 className="text-2xl font-bold mb-4">Have an idea?</h2>
           <p className="text-muted-foreground mb-8">
-            Let&apos;s discuss your next project and build something great together.
+            Let&apos;s discuss your next project and build something great
+            together.
           </p>
           <Link
             href="/contact"
@@ -204,5 +245,5 @@ export default function Projects() {
         </motion.section>
       </div>
     </div>
-  )
+  );
 }

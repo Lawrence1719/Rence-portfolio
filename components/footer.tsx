@@ -1,15 +1,25 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Github, Linkedin, Mail, Twitter } from "lucide-react"
-import Link from "next/link"
+import { Github, Linkedin, Mail } from "lucide-react"
 
 export function Footer() {
   const socialLinks = [
-    { icon: Github, href: "#", label: "GitHub" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Mail, href: "mailto:rence@example.com", label: "Email" },
+    { 
+      icon: Mail, 
+      href: "mailto:lawrence.dizon@proton.me", 
+      label: "Email"
+    },
+    { 
+      icon: Github, 
+      href: "https://github.com/Lawrence1719", 
+      label: "GitHub"
+    },
+    { 
+      icon: Linkedin, 
+      href: "https://www.linkedin.com/in/lawrence-dizon-343899299",
+      label: "LinkedIn"
+    }
   ]
 
   return (
@@ -36,14 +46,16 @@ export function Footer() {
             className="flex gap-4"
           >
             {socialLinks.map((social) => (
-              <Link
+              <a
                 key={social.label}
                 href={social.href}
+                target={social.href.startsWith('http') ? '_blank' : undefined}
+                rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className="p-2 rounded border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 aria-label={social.label}
               >
                 <social.icon className="w-5 h-5" />
-              </Link>
+              </a>
             ))}
           </motion.div>
         </div>

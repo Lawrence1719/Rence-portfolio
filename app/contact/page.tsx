@@ -33,21 +33,49 @@ export default function Contact() {
     message: "",
   })
   const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-      setFormState({ name: "", email: "", message: "" })
-    }, 3000)
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      console.log('Sending form data:', formState)
+      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formState),
+      })
+
+      const data = await response.json()
+      console.log('Response:', data)
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+
+      setSubmitted(true)
+      setTimeout(() => {
+        setSubmitted(false)
+        setFormState({ name: "", email: "", message: "" })
+      }, 3000)
+    } catch (err) {
+      console.error('Error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to send message')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const socialLinks = [
-    { icon: Mail, href: "mailto:rence@example.com", label: "Email" },
-    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Mail, href: "mailto:lawrence.dizon@proton.me", label: "Email" },
+    { icon: Github, href: "https://github.com/Lawrence1719", label: "GitHub" },
     { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Twitter, href: "#", label: "Twitter" },
   ]
 
   return (
@@ -82,6 +110,7 @@ export default function Contact() {
                 onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Your name"
+                disabled={isLoading}
               />
             </div>
 
@@ -97,6 +126,7 @@ export default function Contact() {
                 onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="your@email.com"
+                disabled={isLoading}
               />
             </div>
 
@@ -112,16 +142,24 @@ export default function Contact() {
                 rows={6}
                 className="w-full px-4 py-2 border border-border rounded bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                 placeholder="Tell me about your project..."
+                disabled={isLoading}
               />
             </div>
 
+            {error && (
+              <div className="p-3 border border-red-500/50 bg-red-500/10 rounded text-red-500 text-sm">
+                {error}
+              </div>
+            )}
+
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full px-6 py-3 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all font-mono text-sm font-semibold"
+              whileHover={{ scale: isLoading ? 1 : 1.02 }}
+              whileTap={{ scale: isLoading ? 1 : 0.98 }}
+              disabled={isLoading || submitted}
+              className="w-full px-6 py-3 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all font-mono text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitted ? "✓ Message Sent!" : "Send Message"}
+              {isLoading ? "Sending..." : submitted ? "✓ Message Sent!" : "Send Message"}
             </motion.button>
           </motion.form>
         </motion.section>
@@ -144,6 +182,8 @@ export default function Contact() {
                 whileTap={{ scale: 0.95 }}
                 className="p-3 border border-border rounded hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 aria-label={social.label}
+                target={social.href.startsWith('http') ? '_blank' : undefined}
+                rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
               >
                 <social.icon className="w-5 h-5" />
               </motion.a>

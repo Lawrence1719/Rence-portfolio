@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
-import { Code2, Database, Palette, Github, Linkedin } from "lucide-react"
+import { Code2, Database, Palette, Github, Linkedin, Wrench } from "lucide-react"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,29 +26,35 @@ const itemVariants = {
 
 export default function About() {
   const skills = [
-    { category: "Frontend", icon: Palette, items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"] },
-    { category: "Backend", icon: Database, items: ["Node.js", "Express", "PostgreSQL", "MongoDB", "REST APIs"] },
-    { category: "Tools", icon: Code2, items: ["Git", "Docker", "Vercel", "AWS", "CI/CD"] },
+    {
+      category: "Frontend",
+      icon: Palette,
+      items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "Framer Motion"],
+    },
+    {
+      category: "Backend",
+      icon: Database,
+      items: ["Node.js", "Express.js", "Supabase", "PostgreSQL", "REST APIs", "JWT"],
+    },
+    {
+      category: "Tools & Others",
+      icon: Wrench,
+      items: ["Git", "Vite", "Vercel", "React Hook Form", "Zod", "Axios"],
+    },
   ]
 
   const experience = [
     {
-      year: "2023 - Present",
-      role: "Senior Full Stack Developer",
-      company: "Tech Startup Inc.",
-      desc: "Led development of customer-facing applications using React and Node.js, improving performance by 40%.",
+      year: "2024 - Present",
+      role: "Student Developer",
+      company: "Never Stop Dreaming Trading (Capstone Project)",
+      desc: "Building a full-stack IoT-powered inventory and e-commerce system using React, TypeScript, Tailwind CSS, Supabase, Node.js, and Express.",
     },
     {
-      year: "2021 - 2023",
-      role: "Full Stack Developer",
-      company: "Digital Agency Co.",
-      desc: "Built and maintained 15+ web applications for clients across various industries.",
-    },
-    {
-      year: "2019 - 2021",
-      role: "Junior Developer",
-      company: "StartUp Hub",
-      desc: "Developed React components and APIs, collaborated with cross-functional teams.",
+      year: "2023 - 2024",
+      role: "Personal Projects",
+      company: "Self-Learning Journey",
+      desc: "Created and deployed web applications including CalculaStats (Statistics Calculator) and ArraySort visualizer using React, TypeScript, Vite, and modern web technologies.",
     },
   ]
 
@@ -63,16 +69,19 @@ export default function About() {
             </h1>
             <div className="space-y-4 text-lg text-muted-foreground max-w-3xl leading-relaxed">
               <p>
-                I&apos;m a passionate full-stack developer with 5+ years of experience building web applications. I
-                started my journey in tech with a curiosity about how things work on the internet.
+                I&apos;m an IT student and a hands-on developer who enjoys working with modern web technologies
+                — especially <span className="text-primary font-semibold">React</span>, <span className="text-primary font-semibold">TypeScript</span>, 
+                and the <span className="text-primary font-semibold">PERN stack</span> (PostgreSQL, Express, React, Node.js).
+                I&apos;ve also been exploring <span className="text-primary font-semibold">Next.js</span> and <span className="text-primary font-semibold">Supabase</span> for 
+                modern full-stack development.
               </p>
               <p>
-                Today, I specialize in creating beautiful, performant, and scalable applications. I love the
-                intersection of design and development, where pixel-perfect interfaces meet clean, efficient code.
+                I like building things that look good and work well — from simple tools to interactive web apps. Most
+                of what I've learned comes from experimenting, debugging, and vibing with code until it works.
               </p>
               <p>
-                When I&apos;m not coding, you&apos;ll find me exploring new technologies, contributing to open source,
-                or sharing knowledge with the developer community.
+                My goal is to keep growing as a full-stack developer and eventually contribute to real-world projects
+                that make an impact.
               </p>
             </div>
           </motion.div>
@@ -157,11 +166,13 @@ export default function About() {
         >
           <h2 className="text-2xl font-bold mb-4">Let&apos;s Connect</h2>
           <p className="text-muted-foreground mb-8">
-            I&apos;m open to opportunities and always interested in collaborating on interesting projects.
+            I&apos;m open to collaboration, learning opportunities, and fun coding projects.
           </p>
           <div className="flex justify-center gap-4">
             <a
-              href="#"
+              href="https://github.com/Lawrence1719"
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-3 border border-border rounded hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
               aria-label="GitHub"
             >

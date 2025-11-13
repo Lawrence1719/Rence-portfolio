@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { TypewriterEffect } from "@/components/typewriter-effect"
-import { useState, useEffect } from "react"
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { TypewriterEffect } from "@/components/typewriter-effect";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [showContent, setShowContent] = useState(false)
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     // Show content after "connection established" completes (around 3.8 seconds)
     const timer = setTimeout(() => {
-      setShowContent(true)
-    }, 3800)
+      setShowContent(true);
+    }, 3800);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="pt-20 pb-12">
@@ -48,13 +48,25 @@ export default function Home() {
             {/* Typewriter Lines */}
             <div className="space-y-2 font-mono text-sm">
               <div className="text-primary/80">
-                <TypewriterEffect text="$ initializing portfolio..." delay={100} speed={50} />
+                <TypewriterEffect
+                  text="$ initializing portfolio..."
+                  delay={100}
+                  speed={50}
+                />
               </div>
               <div className="text-primary/80">
-                <TypewriterEffect text="$ loading profile data..." delay={1200} speed={50} />
+                <TypewriterEffect
+                  text="$ loading profile data..."
+                  delay={1200}
+                  speed={50}
+                />
               </div>
               <div className="text-primary">
-                <TypewriterEffect text="$ connection established" delay={2400} speed={50} />
+                <TypewriterEffect
+                  text="$ connection established"
+                  delay={2400}
+                  speed={50}
+                />
               </div>
             </div>
 
@@ -74,20 +86,24 @@ export default function Home() {
                     <span className="text-cyan-400">Rence</span>
                   </h1>
                   <p className="text-base font-mono text-muted-foreground ml-8">
-                    Full-Stack Developer | UI/UX Enthusiast | Problem Solver
+                    Aspiring Full-Stack Developer | IT Student | Web Dev
+                    Enthusiast
                   </p>
                 </div>
 
                 {/* Bio Lines */}
                 <div className="space-y-2 font-mono text-sm text-muted-foreground ml-8">
                   <div className="text-primary">
-                    <span className="text-green-400">$</span> I build elegant digital experiences with clean code
+                    <span className="text-green-400">$</span> I build elegant
+                    digital experiences with clean code
                   </div>
                   <div className="text-primary">
-                    <span className="text-green-400">$</span> Passionate about creating seamless user interfaces
+                    <span className="text-green-400">$</span> Passionate about
+                    creating seamless user interfaces
                   </div>
                   <div className="text-primary">
-                    <span className="text-green-400">$</span> Always learning, always building
+                    <span className="text-green-400">$</span> Always learning,
+                    always building
                   </div>
                 </div>
 
@@ -120,25 +136,39 @@ export default function Home() {
             className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
             {/* Stat Card 1 */}
+            {/* Stat Card 1 */}
             <div className="border border-green-400/40 rounded-lg bg-background/30 backdrop-blur-sm p-8 text-center hover:border-green-400/70 transition-colors">
-              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">5+</div>
-              <div className="text-sm md:text-base font-mono text-muted-foreground">Years Exp</div>
+              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">
+                2
+              </div>
+              <div className="text-sm md:text-base font-mono text-muted-foreground">
+                Deployed Projects
+              </div>
             </div>
 
             {/* Stat Card 2 */}
             <div className="border border-green-400/40 rounded-lg bg-background/30 backdrop-blur-sm p-8 text-center hover:border-green-400/70 transition-colors">
-              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">50+</div>
-              <div className="text-sm md:text-base font-mono text-muted-foreground">Projects</div>
+              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">
+                2
+              </div>
+              <div className="text-sm md:text-base font-mono text-muted-foreground">
+                Projects
+              </div>
             </div>
 
             {/* Stat Card 3 */}
             <div className="border border-green-400/40 rounded-lg bg-background/30 backdrop-blur-sm p-8 text-center hover:border-green-400/70 transition-colors">
-              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">∞</div>
-              <div className="text-sm md:text-base font-mono text-muted-foreground">Coffee Cups</div>
+              {" "}
+              <div className="text-4xl md:text-5xl font-bold text-green-400 font-mono mb-2">
+                ∞
+              </div>{" "}
+              <div className="text-sm md:text-base font-mono text-muted-foreground">
+                Coffee Cups
+              </div>{" "}
             </div>
           </motion.div>
         )}
       </div>
     </div>
-  )
+  );
 }
