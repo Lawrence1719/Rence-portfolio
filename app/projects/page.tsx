@@ -149,7 +149,7 @@ export default function Projects() {
                   </div>
                 )}
               </div>
-              <div className="relative flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded border border-border/50 overflow-hidden">
+              <div className="relative flex items-center justify-center p-4 bg-linear-to-br from-primary/10 to-primary/5 rounded border border-border/50 overflow-hidden">
                 {featuredProject.image ? (
                   <img
                     src={featuredProject.image}

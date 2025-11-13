@@ -143,7 +143,7 @@ export default function About() {
                 viewport={{ once: true }}
                 className="flex flex-col md:flex-row gap-6 pb-8 border-b border-border last:border-b-0"
               >
-                <div className="md:w-32 flex-shrink-0">
+                <div className="md:w-32 shrink-0">
                   <p className="text-primary font-mono font-bold text-sm">{exp.year}</p>
                 </div>
                 <div className="flex-1">

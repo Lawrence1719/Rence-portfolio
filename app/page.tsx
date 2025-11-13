@@ -28,7 +28,7 @@ export default function Home() {
           className="border border-primary/40 rounded-lg bg-background/40 backdrop-blur-xl overflow-hidden shadow-2xl"
         >
           {/* Window Header */}
-          <div className="bg-gradient-to-r from-primary/10 to-cyan-500/10 border-b border-primary/20 px-6 py-4 flex items-center justify-between">
+          <div className="bg-linear-to-r from-primary/10 to-cyan-500/10 border-b border-primary/20 px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-sm font-mono text-primary">
                 <span className="text-green-400">&gt;</span> ~/portfolio

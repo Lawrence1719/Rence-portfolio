@@ -139,7 +139,7 @@ export default function Resume() {
             </a>
             <span className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              Manila, Philippines
+              Cavite, Philippines
             </span>
           </motion.div>
         </motion.div>
