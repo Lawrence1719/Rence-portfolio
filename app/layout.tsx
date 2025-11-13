@@ -10,11 +10,18 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Rence | Full Stack Developer",
-  description: "CLI-inspired portfolio showcasing projects, skills, and experience.",
-  icons: {
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" fontSize="75" fill="%23b2ff59">$</text></svg>',
+  description: "My porftolio",
+   icons: {
+    icon: [
+      { url: '/images/Logo.png', sizes: '16x16', type: 'image/png' },
+      { url: '/images/Logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/images/Logo.png', sizes: '96x96', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/images/Logo.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
