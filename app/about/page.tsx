@@ -34,7 +34,12 @@ export default function About() {
     {
       category: "Backend",
       icon: Database,
-      items: ["Node.js", "Express.js", "Supabase", "PostgreSQL", "REST APIs", "JWT"],
+      items: ["Node.js", "Express.js", "Supabase", "PostgreSQL", "REST APIs", "JWT", "PHP", "Laravel"],
+    },
+    {
+      category: "Languages",
+      icon: Code2,
+      items: ["JavaScript", "TypeScript", "Python", "Java", "C++", "PHP"],
     },
     {
       category: "Tools & Others",
@@ -96,7 +101,7 @@ export default function About() {
           className="mb-20 border-t border-border pt-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-12">Skills & Stack</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {skills.map((skillGroup, i) => (
               <motion.div
                 key={i}
@@ -143,7 +148,7 @@ export default function About() {
                 viewport={{ once: true }}
                 className="flex flex-col md:flex-row gap-6 pb-8 border-b border-border last:border-b-0"
               >
-                <div className="md:w-32 shrink-0">
+                <div className="md:w-32 flex-shrink-0">
                   <p className="text-primary font-mono font-bold text-sm">{exp.year}</p>
                 </div>
                 <div className="flex-1">
