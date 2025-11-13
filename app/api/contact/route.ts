@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         { error: 'API key not configured' },
         { status: 500 }
       );
-    }
+    } 
 
     // Dynamically import Resend only when the function runs
     const { Resend } = await import('resend');
