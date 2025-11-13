@@ -12,6 +12,7 @@ export function Navigation() {
     { href: "/", label: "home" },
     { href: "/about", label: "about" },
     { href: "/projects", label: "projects" },
+    { href: "/resume", label: "resume" },
     { href: "/contact", label: "contact" },
   ]
 
