@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { TypewriterEffect } from "@/components/typewriter-effect";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Show content after "connection established" completes (around 3.8 seconds)
@@ -16,6 +18,22 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Secret admin shortcut: Ctrl + Shift + M (admin)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key === 'M') {
+        event.preventDefault();
+        router.push('/admin-login');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [router]);
 
   return (
     <div className="pt-20 pb-12">
