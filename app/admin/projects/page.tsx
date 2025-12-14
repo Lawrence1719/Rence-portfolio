@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import ProjectsTable from "@/components/admin/projects-table";
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminProjectsPage() {
   const { projects } = await getProjects();
 
