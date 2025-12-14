@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -36,8 +37,14 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
         {/* Logo */}
         <div className="flex h-16 items-center border-b border-border px-6">
           <Link href="/admin/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-lg font-bold text-primary-foreground">R</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary overflow-hidden">
+              <Image
+                src="/images/Logo.png"
+                alt="Logo"
+                width={32}
+                height={32}
+                className="h-full w-full object-cover"
+              />
             </div>
             <span className="text-lg font-semibold">Admin Panel</span>
           </Link>
