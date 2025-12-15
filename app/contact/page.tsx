@@ -80,7 +80,7 @@ export default function Contact() {
   const socialLinks = [
     { icon: Mail, href: "mailto:lawrence.dizon@proton.me", label: "Email" },
     { icon: Github, href: "https://github.com/Lawrence1719", label: "GitHub" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/lawrence-dizon-343899299", label: "LinkedIn" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
   ]
 
   return (
@@ -242,7 +242,7 @@ export default function Contact() {
                 <social.icon className="w-5 h-5" />
               </motion.a>
             ))}
-          </div>  
+          </div>
         </motion.section>
       </div>
     </div>
