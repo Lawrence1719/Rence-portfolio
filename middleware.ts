@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Middleware is disabled - authentication handled in app/admin/layout.tsx
   return NextResponse.next()
 }
 

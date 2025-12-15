@@ -184,7 +184,9 @@ export default function About() {
               <Github className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/lawrence-dizon-343899299"
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-3 border border-border rounded hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
               aria-label="LinkedIn"
             >
