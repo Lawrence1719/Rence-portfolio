@@ -5,6 +5,7 @@ import type React from "react"
 import { motion } from "framer-motion"
 import { Mail, Linkedin, Github, Twitter } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -64,6 +65,7 @@ export default function Contact() {
         throw new Error(data.error || 'Failed to send message')
       }
 
+      toast.success("Message sent successfully! I'll get back to you soon.")
       setSubmitted(true)
       setTimeout(() => {
         setSubmitted(false)
@@ -71,7 +73,9 @@ export default function Contact() {
       }, 5000) // Increased timeout so user can see success message longer
     } catch (err) {
       console.error('Error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to send message')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send message'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { logout } from "./actions"
 import { LogOut } from "lucide-react"
+import { PhilippineGreeting } from "@/components/philippine-greeting"
 
 export default async function AdminLayout({
   children,
@@ -25,9 +26,7 @@ export default async function AdminLayout({
             <h1 className="text-xl sm:text-2xl font-mono font-bold text-foreground tracking-wide">
               admin
             </h1>
-            <p className="text-xs text-muted-foreground font-mono">
-              <span className="text-primary">$</span> authenticated session
-            </p>
+            <PhilippineGreeting />
           </div>
 
           {/* User Info & Logout */}

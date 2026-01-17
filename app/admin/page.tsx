@@ -2,6 +2,8 @@ import { getUser } from "@/lib/supabase/server"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
+import { DashboardGreeting } from "@/components/dashboard-greeting"
 
 export default async function AdminPage() {
   const user = await getUser()
@@ -14,9 +16,7 @@ export default async function AdminPage() {
           <h2 className="text-2xl sm:text-3xl font-mono font-bold text-foreground tracking-wide">
             dashboard
           </h2>
-          <p className="text-sm text-muted-foreground font-mono">
-            <span className="text-primary">$</span> welcome to admin panel
-          </p>
+          <DashboardGreeting />
         </div>
       </div>
 
@@ -76,6 +76,29 @@ export default async function AdminPage() {
 
       <Separator className="bg-border/30" />
 
+      {/* Quick Actions */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-mono font-semibold text-foreground">quick actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link href="/admin/projects">
+            <div className="p-4 rounded-md border border-border/30 bg-background/50 hover:bg-background/70 transition-colors cursor-pointer">
+              <p className="text-sm font-mono text-foreground mb-2">📁 manage projects</p>
+              <p className="text-xs text-muted-foreground font-mono">
+                add, edit, and organize portfolio projects
+              </p>
+            </div>
+          </Link>
+          <div className="p-4 rounded-md border border-border/30 bg-background/50">
+            <p className="text-sm font-mono text-foreground mb-2">⚙️ settings</p>
+            <p className="text-xs text-muted-foreground font-mono">
+              coming soon
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <Separator className="bg-border/30" />
+
       {/* Features Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-mono font-semibold text-foreground">features</h3>
@@ -99,9 +122,9 @@ export default async function AdminPage() {
             </p>
           </div>
           <div className="p-4 rounded-md border border-border/30 bg-background/50">
-            <p className="text-sm font-mono text-foreground mb-2">✓ minimal design</p>
+            <p className="text-sm font-mono text-foreground mb-2">✓ projects management</p>
             <p className="text-xs text-muted-foreground font-mono">
-              clean, terminal-inspired cli interface
+              full crud operations for portfolio projects
             </p>
           </div>
         </div>
@@ -110,7 +133,7 @@ export default async function AdminPage() {
       {/* Footer Note */}
       <div className="pt-4 border-t border-border/30 text-center">
         <p className="text-xs text-muted-foreground/60 font-mono">
-          ↳ dashboard is a placeholder for future functionality
+          ↳ admin panel v2.0 with projects management
         </p>
       </div>
     </div>

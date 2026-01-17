@@ -3,53 +3,8 @@
 import { motion } from "framer-motion";
 import { ExternalLink, Github, Code2 } from "lucide-react";
 import Link from "next/link";
-
-const projects = [
-  {
-    title: "Never Stop Dreaming Trading",
-    description:
-      "A web-based IoT inventory and e-commerce platform for a small grocery business. It connects real-time IoT sensors with a Supabase backend to monitor stock and automate restocking alerts.",
-    tech: [
-      "React",
-      "TypeScript",
-      "Vite",
-      "Tailwind CSS",
-      "Supabase",
-      "Node.js",
-      "Express",
-      "shadcn/ui",
-    ],
-    link: "https://never-stop-dreaming.vercel.app",
-    github: "https://github.com/Lawrence1719/never-stop-dreaming-frontend",
-    featured: true,
-    inProgress: true,
-    image: "/images/ProjectImage.png",
-  },
-  {
-    title: "Subverb-ify",
-    description: "Interactive Educational Website.",
-    tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "ESLint"],
-    link: "https://subverb-ify.vercel.app/",
-    github: "https://github.com/Lawrence1719/Subverb-ify-frontend",
-    inProgress: true, // This is marked as work in progress
-  },
-  {
-    title: "CalculaStats",
-    description: "Statistics Calculator",
-    tech: ["React", "TypeScript", "Tailwind CSS", "Vite", "Git", "Vercel"],
-    link: "https://calcula-stats.vercel.app/",
-    github: "https://github.com/Lawrence1719/CalculaStats",
-    inProgress: false,
-  },
-  {
-    title: "ArraySort",
-    description: "Simple array sorting.",
-    tech: ["HTML", "CSS", "JavaScript"],
-    link: "https://array-sort-mu.vercel.app/",
-    github: "https://github.com/Lawrence1719/ArraySort",
-    inProgress: false, // This is marked as work in progress
-  },
-];
+import { useEffect, useState } from "react";
+import { Project } from "@/lib/types/project";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -72,8 +27,48 @@ const itemVariants = {
 };
 
 export default function Projects() {
-  const featuredProject = projects.find((p) => p.featured);
-  const otherProjects = projects.filter((p) => !p.featured);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const featuredProject = projects.find((p) => p.is_featured && p.is_visible);
+  const otherProjects = projects.filter((p) => !p.is_featured && p.is_visible);
+
+  if (loading) {
+    return (
+      <div className="pt-24 pb-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="animate-pulse space-y-8">
+            <div className="h-12 bg-muted rounded w-1/3"></div>
+            <div className="h-4 bg-muted rounded w-2/3"></div>
+            <div className="h-64 bg-muted rounded"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-48 bg-muted rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-24 pb-12">
@@ -117,42 +112,46 @@ export default function Projects() {
                   {featuredProject.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {featuredProject.tech.map((t) => (
+                  {featuredProject.tags.map((tag) => (
                     <span
-                      key={t}
+                      key={tag}
                       className="px-3 py-1 bg-primary/10 border border-primary text-primary rounded text-xs font-mono"
                     >
-                      {t}
+                      {tag}
                     </span>
                   ))}
                 </div>
-                {featuredProject.inProgress ? (
+                {featuredProject.status === "Work in Progress" ? (
                   <div className="flex items-center justify-center py-3 px-6 text-sm font-mono text-muted-foreground border border-dashed border-border rounded bg-muted/30">
                     🚧 Work in Progress
                   </div>
                 ) : (
                   <div className="flex gap-4">
-                    <a
-                      href={featuredProject.link}
-                      className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-sm font-mono"
-                    >
-                      View Live
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                    <a
-                      href={featuredProject.github}
-                      className="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-sm font-mono"
-                    >
-                      Code
-                      <Github className="w-4 h-4" />
-                    </a>
+                    {featuredProject.links.Live && (
+                      <a
+                        href={featuredProject.links.Live}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-sm font-mono"
+                      >
+                        View Live
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    {featuredProject.links.Code && (
+                      <a
+                        href={featuredProject.links.Code}
+                        className="flex items-center gap-2 px-4 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-sm font-mono"
+                      >
+                        Code
+                        <Github className="w-4 h-4" />
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
               <div className="relative flex items-center justify-center p-4 bg-linear-to-br from-primary/10 to-primary/5 rounded border border-border/50 overflow-hidden">
-                {featuredProject.image ? (
+                {featuredProject.thumbnail_url ? (
                   <img
-                    src={featuredProject.image}
+                    src={featuredProject.thumbnail_url}
                     alt={featuredProject.title}
                     className="w-full h-full object-cover rounded"
                   />
@@ -174,7 +173,7 @@ export default function Projects() {
         >
           {otherProjects.map((project, i) => (
             <motion.div
-              key={i}
+              key={project.id}
               variants={itemVariants}
               whileHover={{ y: -8 }}
               transition={{ duration: 0.3 }}
@@ -185,37 +184,41 @@ export default function Projects() {
                 {project.description}
               </p>
               <div className="flex flex-wrap gap-2 mb-4">
-                {project.tech.map((t) => (
+                {project.tags.map((tag) => (
                   <span
-                    key={t}
+                    key={tag}
                     className="px-2 py-1 bg-primary/10 border border-primary text-primary rounded text-xs font-mono"
                   >
-                    {t}
+                    {tag}
                   </span>
                 ))}
               </div>
-              {project.inProgress ? (
+              {project.status === "Work in Progress" ? (
                 <div className="flex items-center justify-center py-2 text-xs font-mono text-muted-foreground border border-dashed border-border rounded">
                   🚧 Work in Progress
                 </div>
               ) : (
                 <div className="flex gap-3">
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-xs font-mono"
-                  >
-                    View
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    className="flex-1 flex items-center justify-center gap-2 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-xs font-mono"
-                  >
-                    Code
-                    <Github className="w-3 h-3" />
-                  </a>
+                  {project.links.Live && (
+                    <a
+                      href={project.links.Live}
+                      target="_blank"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary text-primary-foreground rounded hover:shadow-lg hover:shadow-primary/50 transition-all text-xs font-mono"
+                    >
+                      View
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                  {project.links.Code && (
+                    <a
+                      href={project.links.Code}
+                      target="_blank"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 border border-primary text-primary rounded hover:bg-primary/10 transition-all text-xs font-mono"
+                    >
+                      Code
+                      <Github className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               )}
             </motion.div>

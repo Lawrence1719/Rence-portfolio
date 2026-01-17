@@ -2,20 +2,30 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createBrowserClient } from "@supabase/ssr"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AlertCircle, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get("logout") === "success") {
+      toast.success("👋 Goodbye! See you next time!")
+      // Clean up the URL
+      router.replace("/login")
+    }
+  }, [searchParams, router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,15 +44,20 @@ export default function LoginPage() {
       })
 
       if (authError) {
-        setError(authError.message || "Login failed. Please try again.")
+        const errorMessage = authError.message || "Login failed. Please try again."
+        setError(errorMessage)
+        toast.error(errorMessage)
         return
       }
 
+      toast.success("Login successful!")
       // Redirect to admin dashboard on successful login
       router.push("/admin")
       router.refresh()
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
+      const errorMessage = "An unexpected error occurred. Please try again."
+      setError(errorMessage)
+      toast.error(errorMessage)
       console.error(err)
     } finally {
       setIsLoading(false)
@@ -143,5 +158,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }
