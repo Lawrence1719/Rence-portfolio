@@ -50,7 +50,7 @@ function LoginForm() {
 
         // Log failed login attempt
         try {
-          await fetch('/api/log-login-attempt', {
+          const logResponse = await fetch('/api/log-login-attempt', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -59,8 +59,14 @@ function LoginForm() {
               errorMessage: errorMessage,
             }),
           });
+
+          if (!logResponse.ok) {
+            console.error('Failed to log login attempt - HTTP error:', logResponse.status, logResponse.statusText);
+          } else {
+            console.log('Failed login attempt logged successfully');
+          }
         } catch (logError) {
-          console.error('Failed to log login attempt:', logError);
+          console.error('Failed to log login attempt - Network error:', logError);
         }
 
         return
@@ -70,7 +76,7 @@ function LoginForm() {
 
       // Log successful login attempt
       try {
-        await fetch('/api/log-login-attempt', {
+        const logResponse = await fetch('/api/log-login-attempt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -78,8 +84,14 @@ function LoginForm() {
             success: true,
           }),
         });
+
+        if (!logResponse.ok) {
+          console.error('Failed to log successful login attempt - HTTP error:', logResponse.status, logResponse.statusText);
+        } else {
+          console.log('Successful login attempt logged');
+        }
       } catch (logError) {
-        console.error('Failed to log login attempt:', logError);
+        console.error('Failed to log successful login attempt - Network error:', logError);
       }
 
       // Redirect to admin dashboard on successful login
