@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Shield, Eye, EyeOff, RefreshCw } from "lucide-react";
-import { getLoginAttempts } from "../projects/actions";
+import { Shield, Eye, EyeOff, RefreshCw, ArrowLeft, Trash2, BarChart3 } from "lucide-react";
+import { getLoginAttempts, cleanupOldLoginAttempts, getLoginAttemptsStats } from "../projects/actions";
 import { format } from "date-fns";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface LoginAttempt {
   id: string;
@@ -22,12 +24,23 @@ export default function LoginAttemptsPage() {
   const [attempts, setAttempts] = useState<LoginAttempt[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [stats, setStats] = useState<{
+    total: number;
+    successful: number;
+    failed: number;
+    recent: number;
+  } | null>(null);
+  const [cleaningUp, setCleaningUp] = useState(false);
 
   const fetchAttempts = async () => {
     try {
       setLoading(true);
-      const data = await getLoginAttempts();
-      setAttempts(data);
+      const [attemptsData, statsData] = await Promise.all([
+        getLoginAttempts(),
+        getLoginAttemptsStats()
+      ]);
+      setAttempts(attemptsData);
+      setStats(statsData);
     } catch (error) {
       console.error("Failed to fetch login attempts:", error);
     } finally {
@@ -35,11 +48,29 @@ export default function LoginAttemptsPage() {
     }
   };
 
+  const handleCleanup = async () => {
+    if (!confirm('Are you sure you want to delete login attempts older than 90 days? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setCleaningUp(true);
+      await cleanupOldLoginAttempts(90);
+      toast.success('Old login attempts cleaned up successfully!');
+      await fetchAttempts(); // Refresh data
+    } catch (error) {
+      console.error('Failed to cleanup old attempts:', error);
+      toast.error('Failed to cleanup old login attempts');
+    } finally {
+      setCleaningUp(false);
+    }
+  };
+
   useEffect(() => {
     fetchAttempts();
   }, []);
 
-  const displayedAttempts = showAll ? attempts : attempts.slice(0, 20);
+  const displayedAttempts = showAll ? attempts : attempts.slice(0, 50);
 
   const getDeviceInfo = (userAgent: string) => {
     const ua = userAgent.toLowerCase();
@@ -83,21 +114,43 @@ export default function LoginAttemptsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" className="font-mono">
+              <ArrowLeft className="size-4 mr-2" />
+              back
+            </Button>
+          </Link>
           <Shield className="size-6 text-primary" />
-          <h1 className="text-2xl font-mono font-bold">Login Attempts</h1>
-          <Badge variant="outline" className="font-mono">
-            {attempts.length} total
-          </Badge>
+          <div>
+            <h1 className="text-2xl font-mono font-bold">Login Attempts</h1>
+            {stats && (
+              <p className="text-sm text-muted-foreground font-mono">
+                {stats.total} total • {stats.successful} successful • {stats.failed} failed • {stats.recent} in last 24h
+              </p>
+            )}
+          </div>
         </div>
-        <Button
-          onClick={fetchAttempts}
-          size="sm"
-          variant="outline"
-          className="font-mono"
-        >
-          <RefreshCw className="size-4 mr-2" />
-          refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleCleanup}
+            size="sm"
+            variant="destructive"
+            className="font-mono"
+            disabled={cleaningUp}
+          >
+            <Trash2 className="size-4 mr-2" />
+            {cleaningUp ? 'cleaning...' : 'cleanup old'}
+          </Button>
+          <Button
+            onClick={fetchAttempts}
+            size="sm"
+            variant="outline"
+            className="font-mono"
+          >
+            <RefreshCw className="size-4 mr-2" />
+            refresh
+          </Button>
+        </div>
       </div>
 
       {/* Attempts List */}
@@ -157,7 +210,7 @@ export default function LoginAttemptsPage() {
               </Card>
             ))}
 
-            {attempts.length > 20 && (
+            {attempts.length > 50 && (
               <div className="text-center">
                 <Button
                   onClick={() => setShowAll(!showAll)}

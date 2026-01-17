@@ -1,6 +1,7 @@
-"use client";
+import { notFound } from "next/navigation";
 
 export default function ProjectDetailPage() {
-  // This page is not used - all projects are displayed on the main projects page
-  return null;
+  // Since individual project pages are not implemented,
+  // show 404 for any project slug
+  notFound();
 }

@@ -176,14 +176,14 @@ export async function logLoginAttempt(email: string, success: boolean, errorMess
   }
 }
 
-export async function getLoginAttempts() {
+export async function getLoginAttempts(limit: number = 100) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('login_attempts')
     .select('*')
     .order('attempted_at', { ascending: false })
-    .limit(100);
+    .limit(limit);
 
   if (error) {
     console.error('Error fetching login attempts:', error);
@@ -191,4 +191,69 @@ export async function getLoginAttempts() {
   }
 
   return data || [];
+}
+
+export async function cleanupOldLoginAttempts(daysOld: number = 90) {
+  const supabase = await createClient();
+
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+  const { data, error } = await supabase
+    .from('login_attempts')
+    .delete()
+    .lt('attempted_at', cutoffDate.toISOString());
+
+  if (error) {
+    console.error('Error cleaning up old login attempts:', error);
+    throw new Error('Failed to cleanup old login attempts');
+  }
+
+  return data;
+}
+
+export async function getLoginAttemptsStats() {
+  const supabase = await createClient();
+
+  // Get total attempts
+  const { count: totalAttempts, error: totalError } = await supabase
+    .from('login_attempts')
+    .select('*', { count: 'exact', head: true });
+
+  if (totalError) {
+    console.error('Error getting total attempts:', totalError);
+    throw new Error('Failed to get login attempts stats');
+  }
+
+  // Get successful attempts
+  const { count: successfulAttempts, error: successError } = await supabase
+    .from('login_attempts')
+    .select('*', { count: 'exact', head: true })
+    .eq('success', true);
+
+  if (successError) {
+    console.error('Error getting successful attempts:', successError);
+    throw new Error('Failed to get login attempts stats');
+  }
+
+  // Get attempts from last 24 hours
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const { count: recentAttempts, error: recentError } = await supabase
+    .from('login_attempts')
+    .select('*', { count: 'exact', head: true })
+    .gte('attempted_at', yesterday.toISOString());
+
+  if (recentError) {
+    console.error('Error getting recent attempts:', recentError);
+    throw new Error('Failed to get login attempts stats');
+  }
+
+  return {
+    total: totalAttempts || 0,
+    successful: successfulAttempts || 0,
+    failed: (totalAttempts || 0) - (successfulAttempts || 0),
+    recent: recentAttempts || 0,
+  };
 }
