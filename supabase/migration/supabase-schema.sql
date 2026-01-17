@@ -36,3 +36,25 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_projects_updated_at
   BEFORE UPDATE ON projects
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Login attempts logging table
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT NOT NULL,
+  ip_address INET,
+  user_agent TEXT,
+  success BOOLEAN NOT NULL DEFAULT false,
+  error_message TEXT,
+  attempted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for login attempts
+ALTER TABLE login_attempts ENABLE ROW LEVEL SECURITY;
+
+-- Allow authenticated users to read login attempts
+CREATE POLICY "Allow authenticated users to read login attempts" ON login_attempts
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Allow anyone to insert login attempts (for logging purposes)
+CREATE POLICY "Allow public to insert login attempts" ON login_attempts
+  FOR INSERT WITH CHECK (true);

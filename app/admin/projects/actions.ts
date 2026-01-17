@@ -147,3 +147,48 @@ export async function toggleProjectVisibility(id: string): Promise<Project> {
 
   return project;
 }
+
+export async function logLoginAttempt(email: string, success: boolean, errorMessage?: string, request?: Request) {
+  try {
+    const supabase = await createClient();
+
+    const ipAddress = request?.headers.get('x-forwarded-for') ||
+                     request?.headers.get('x-real-ip') ||
+                     'unknown';
+
+    const userAgent = request?.headers.get('user-agent') || 'unknown';
+
+    const { error } = await supabase
+      .from('login_attempts')
+      .insert({
+        email,
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        success,
+        error_message: errorMessage,
+      });
+
+    if (error) {
+      console.error('Failed to log login attempt:', error);
+    }
+  } catch (error) {
+    console.error('Error logging login attempt:', error);
+  }
+}
+
+export async function getLoginAttempts() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('login_attempts')
+    .select('*')
+    .order('attempted_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    console.error('Error fetching login attempts:', error);
+    throw new Error('Failed to fetch login attempts');
+  }
+
+  return data || [];
+}

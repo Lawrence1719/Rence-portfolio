@@ -79,12 +79,20 @@ export default async function AdminPage() {
       {/* Quick Actions */}
       <div className="space-y-4">
         <h3 className="text-lg font-mono font-semibold text-foreground">quick actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link href="/admin/projects">
             <div className="p-4 rounded-md border border-border/30 bg-background/50 hover:bg-background/70 transition-colors cursor-pointer">
               <p className="text-sm font-mono text-foreground mb-2">📁 manage projects</p>
               <p className="text-xs text-muted-foreground font-mono">
                 add, edit, and organize portfolio projects
+              </p>
+            </div>
+          </Link>
+          <Link href="/admin/login-attempts">
+            <div className="p-4 rounded-md border border-border/30 bg-background/50 hover:bg-background/70 transition-colors cursor-pointer">
+              <p className="text-sm font-mono text-foreground mb-2">🛡️ login attempts</p>
+              <p className="text-xs text-muted-foreground font-mono">
+                monitor authentication activity
               </p>
             </div>
           </Link>

@@ -47,10 +47,41 @@ function LoginForm() {
         const errorMessage = authError.message || "Login failed. Please try again."
         setError(errorMessage)
         toast.error(errorMessage)
+
+        // Log failed login attempt
+        try {
+          await fetch('/api/log-login-attempt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              success: false,
+              errorMessage: errorMessage,
+            }),
+          });
+        } catch (logError) {
+          console.error('Failed to log login attempt:', logError);
+        }
+
         return
       }
 
       toast.success("Login successful!")
+
+      // Log successful login attempt
+      try {
+        await fetch('/api/log-login-attempt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            success: true,
+          }),
+        });
+      } catch (logError) {
+        console.error('Failed to log login attempt:', logError);
+      }
+
       // Redirect to admin dashboard on successful login
       router.push("/admin")
       router.refresh()
