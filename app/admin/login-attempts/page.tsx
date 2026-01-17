@@ -9,6 +9,7 @@ import { getLoginAttempts, cleanupOldLoginAttempts, getLoginAttemptsStats } from
 import { format } from "date-fns";
 import Link from "next/link";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface LoginAttempt {
   id: string;
@@ -31,6 +32,7 @@ export default function LoginAttemptsPage() {
     recent: number;
   } | null>(null);
   const [cleaningUp, setCleaningUp] = useState(false);
+  const [showCleanupDialog, setShowCleanupDialog] = useState(false);
 
   const fetchAttempts = async () => {
     try {
@@ -49,20 +51,20 @@ export default function LoginAttemptsPage() {
   };
 
   const handleCleanup = async () => {
-    if (!confirm('Are you sure you want to delete login attempts older than 90 days? This action cannot be undone.')) {
-      return;
-    }
-
+    console.log('Starting cleanup process...');
     try {
       setCleaningUp(true);
-      await cleanupOldLoginAttempts(90);
-      toast.success('Old login attempts cleaned up successfully!');
+      // For testing, use 1 hour instead of 1 day
+      const result = await cleanupOldLoginAttempts(1/24); // 1 hour = 1/24 day
+      console.log('Cleanup completed, result:', result);
+      toast.success(`Old login attempts cleaned up successfully! Deleted ${result?.length || 0} records.`);
       await fetchAttempts(); // Refresh data
     } catch (error) {
       console.error('Failed to cleanup old attempts:', error);
       toast.error('Failed to cleanup old login attempts');
     } finally {
       setCleaningUp(false);
+      setShowCleanupDialog(false);
     }
   };
 
@@ -131,16 +133,37 @@ export default function LoginAttemptsPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            onClick={handleCleanup}
-            size="sm"
-            variant="destructive"
-            className="font-mono"
-            disabled={cleaningUp}
-          >
-            <Trash2 className="size-4 mr-2" />
-            {cleaningUp ? 'cleaning...' : 'cleanup old'}
-          </Button>
+          <AlertDialog open={showCleanupDialog} onOpenChange={setShowCleanupDialog}>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="font-mono"
+                disabled={cleaningUp}
+              >
+                <Trash2 className="size-4 mr-2" />
+                {cleaningUp ? 'cleaning...' : 'cleanup old'}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-mono">cleanup old login attempts</AlertDialogTitle>
+                <AlertDialogDescription className="font-mono">
+                  this will permanently delete all login attempts older than 1 hour. this action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="font-mono">cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleCleanup}
+                  className="font-mono bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={cleaningUp}
+                >
+                  {cleaningUp ? 'cleaning...' : 'delete old attempts'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button
             onClick={fetchAttempts}
             size="sm"

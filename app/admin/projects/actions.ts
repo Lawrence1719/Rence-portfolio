@@ -199,10 +199,28 @@ export async function cleanupOldLoginAttempts(daysOld: number = 90) {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
+  console.log('Cleanup cutoff date:', cutoffDate.toISOString());
+  console.log('Current date:', new Date().toISOString());
+
+  // First, let's see what records exist
+  const { data: allRecords, error: fetchError } = await supabase
+    .from('login_attempts')
+    .select('id, attempted_at')
+    .order('attempted_at', { ascending: false })
+    .limit(10);
+
+  console.log('Recent records:', allRecords?.map(r => ({
+    id: r.id,
+    attempted_at: r.attempted_at,
+    age_days: Math.floor((Date.now() - new Date(r.attempted_at).getTime()) / (1000 * 60 * 60 * 24))
+  })));
+
   const { data, error } = await supabase
     .from('login_attempts')
     .delete()
     .lt('attempted_at', cutoffDate.toISOString());
+
+  console.log('Cleanup result:', { data, error, deletedCount: data?.length || 0 });
 
   if (error) {
     console.error('Error cleaning up old login attempts:', error);
