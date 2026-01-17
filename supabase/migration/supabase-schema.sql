@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS projects (
 -- Enable RLS (Row Level Security)
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
+-- Create policy for public read access to visible projects
+CREATE POLICY "Allow public read access to visible projects" ON projects
+  FOR SELECT USING (is_visible = true);
+
 -- Create policy for authenticated users to manage projects
 CREATE POLICY "Allow authenticated users to manage projects" ON projects
   FOR ALL USING (auth.role() = 'authenticated');
