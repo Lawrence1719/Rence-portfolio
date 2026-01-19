@@ -2,13 +2,14 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { getProjects } from "../actions";
+import { getProjects, searchProjects } from "../actions";
 import { ProjectForm } from "./project-form";
 import { ProjectsList } from "./projects-list";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import Link from "next/link";
 import { Project } from "@/lib/types/project";
 import { ProjectsGreeting } from "@/components/projects-greeting";
@@ -19,17 +20,24 @@ export function ProjectsPageClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentPage = parseInt(searchParams.get("page") || "1");
+  const searchQuery = searchParams.get("search") || "";
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalProjects, setTotalProjects] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState(searchQuery);
 
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const { projects: fetchedProjects, total } = await getProjects(currentPage, PROJECTS_PER_PAGE);
-      setProjects(fetchedProjects);
-      setTotalProjects(total);
+      let result;
+      if (searchQuery) {
+        result = await searchProjects(searchQuery, currentPage, PROJECTS_PER_PAGE);
+      } else {
+        result = await getProjects(currentPage, PROJECTS_PER_PAGE);
+      }
+      setProjects(result.projects);
+      setTotalProjects(result.total);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
     } finally {
@@ -39,7 +47,7 @@ export function ProjectsPageClient() {
 
   useEffect(() => {
     fetchProjects();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const totalPages = Math.ceil(totalProjects / PROJECTS_PER_PAGE);
 
@@ -47,6 +55,22 @@ export function ProjectsPageClient() {
     const params = new URLSearchParams(searchParams);
     params.set("page", page.toString());
     router.push(`/admin/projects?${params.toString()}`);
+  };
+
+  const handleSearch = (query: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set("search", query);
+    } else {
+      params.delete("search");
+    }
+    params.set("page", "1"); // Reset to first page on search
+    router.push(`/admin/projects?${params.toString()}`);
+  };
+
+  const clearSearch = () => {
+    setSearchInput("");
+    handleSearch("");
   };
 
   return (
@@ -75,6 +99,48 @@ export function ProjectsPageClient() {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <Card className="p-4 border-border/50 bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="search projects..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(searchInput);
+                }
+              }}
+              className="pl-10 pr-10 font-mono text-sm"
+            />
+            {searchInput && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearSearch}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+          <Button
+            onClick={() => handleSearch(searchInput)}
+            size="sm"
+            className="font-mono text-xs h-8"
+          >
+            search
+          </Button>
+          {searchQuery && (
+            <div className="text-sm text-muted-foreground font-mono">
+              {totalProjects} result{totalProjects !== 1 ? 's' : ''} for "{searchQuery}"
+            </div>
+          )}
+        </div>
+      </Card>
+
       {/* Add Project Form */}
       <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="space-y-4">
@@ -89,7 +155,7 @@ export function ProjectsPageClient() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-mono font-semibold text-foreground">
-            all projects ({totalProjects})
+            {searchQuery ? 'search results' : 'all projects'} ({totalProjects})
           </h3>
           {totalPages > 1 && (
             <div className="text-sm text-muted-foreground font-mono">

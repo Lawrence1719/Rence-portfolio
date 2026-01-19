@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { logout } from "./actions"
 import { LogOut } from "lucide-react"
-import { PhilippineGreeting } from "@/components/philippine-greeting"
+import { TimeAndDate } from "@/components/philippine-greeting"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default async function AdminLayout({
   children,
@@ -17,20 +18,28 @@ export default async function AdminLayout({
     redirect("/login")
   }
 
+  const displayName = "Lawrence Dizon"
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Admin Header */}
       <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-mono font-bold text-foreground tracking-wide">
-              admin
-            </h1>
-            <PhilippineGreeting />
+          <div className="flex items-center gap-3">
+            <img src="/images/Logo.png" alt="Logo" className="h-20 w-20 object-contain" />
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl sm:text-2xl font-mono font-bold text-foreground tracking-wide">
+                  {displayName} — admin
+                </h1>
+              </div>
+              <TimeAndDate />
+            </div>
           </div>
 
           {/* User Info & Logout */}
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <div className="hidden sm:block text-right">
               <p className="text-xs text-muted-foreground font-mono truncate max-w-xs">
                 {session.user.email}

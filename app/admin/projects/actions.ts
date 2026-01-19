@@ -114,6 +114,92 @@ export async function deleteProject(id: string): Promise<void> {
   revalidatePath("/projects");
 }
 
+export async function searchProjects(query: string, page: number = 1, limit: number = 10): Promise<{ projects: Project[], total: number }> {
+  const supabase = await createClient();
+
+  // Get total count for search
+  const { count: total, error: countError } = await supabase
+    .from("projects")
+    .select("*", { count: "exact", head: true })
+    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+    .or(`tags.cs.{${query}}`);
+
+  if (countError) {
+    console.error("Error counting search results:", countError);
+    throw new Error("Failed to count search results");
+  }
+
+  // Get paginated search results
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+    .or(`tags.cs.{${query}}`)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error searching projects:", error);
+    throw new Error("Failed to search projects");
+  }
+
+  return { projects: data || [], total: total || 0 };
+}
+
+export async function bulkDeleteProjects(ids: string[]): Promise<void> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .in("id", ids);
+
+  if (error) {
+    console.error("Error bulk deleting projects:", error);
+    throw new Error("Failed to delete projects");
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/projects");
+}
+
+export async function bulkToggleVisibility(ids: string[], visible: boolean): Promise<void> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("projects")
+    .update({ is_visible: visible })
+    .in("id", ids);
+
+  if (error) {
+    console.error("Error bulk toggling visibility:", error);
+    throw new Error("Failed to update project visibility");
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/projects");
+}
+
+export async function bulkToggleFeatured(ids: string[], featured: boolean): Promise<void> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("projects")
+    .update({ is_featured: featured })
+    .in("id", ids);
+
+  if (error) {
+    console.error("Error bulk toggling featured:", error);
+    throw new Error("Failed to update project featured status");
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/projects");
+}
+
 export async function toggleProjectVisibility(id: string): Promise<Project> {
   const supabase = await createClient();
 

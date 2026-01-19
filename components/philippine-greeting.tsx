@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { getPhilippineTimeInfo } from "@/lib/utils"
 
-export function PhilippineGreeting() {
+export function TimeAndDate() {
   const [timeInfo, setTimeInfo] = useState<{ greeting: string; time: string; date: string } | null>(null)
 
   useEffect(() => {
