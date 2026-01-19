@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
         user_agent: userAgent,
         success,
         error_message: errorMessage,
+        is_read: false,
       });
 
     if (error) {

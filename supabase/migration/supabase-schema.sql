@@ -58,3 +58,7 @@ CREATE POLICY "Allow authenticated users to read login attempts" ON login_attemp
 -- Allow anyone to insert login attempts (for logging purposes)
 CREATE POLICY "Allow public to insert login attempts" ON login_attempts
   FOR INSERT WITH CHECK (true);
+
+-- Allow authenticated users to delete login attempts
+CREATE POLICY "Allow authenticated users to delete login attempts" ON login_attempts
+  FOR DELETE USING (auth.role() = 'authenticated');

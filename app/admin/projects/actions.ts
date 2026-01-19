@@ -275,3 +275,20 @@ export async function getLoginAttemptsStats() {
     recent: recentAttempts || 0,
   };
 }
+
+export async function deleteLoginAttempt(id: string): Promise<void> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('login_attempts')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting login attempt:', error);
+    throw new Error(`Failed to delete login attempt: ${error.message}`);
+  }
+
+  // Note: Supabase delete operations may not always return the deleted data
+  // The operation is considered successful if no error occurred
+}
