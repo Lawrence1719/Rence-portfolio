@@ -26,7 +26,7 @@ export default async function AdminLayout({
       <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/images/Logo.png" alt="Logo" className="h-20 w-20 object-contain" />
+            <img src="/images/Logo.png" alt="Logo" className="h-30 w-30 object-contain" />
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <h1 className="text-xl sm:text-2xl font-mono font-bold text-foreground tracking-wide">

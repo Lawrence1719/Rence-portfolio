@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Rence | Full Stack Developer",
   description: "CLI-inspired portfolio showcasing projects, skills, and experience.",
   icons: {
-    icon: '/images/Logo.svg', // Standard favicon path
+    icon: '/images/Logo_favicon.png', // Standard favicon path
   },
   generator: 'v0.app'
 }
