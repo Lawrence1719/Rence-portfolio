@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { TypewriterEffect } from "@/components/typewriter-effect";
 import { useState, useEffect } from "react";
+import { TypewriterEffect } from "@/components/typewriter-effect";
+import { GitHubContributions } from "@/components/github-contributions";
 
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
@@ -167,7 +168,12 @@ export default function Home() {
             </div>
           </motion.div>
         )}
+
+        {showContent && (
+          <GitHubContributions username="Lawrence1719" />
+        )}
       </div>
     </div>
   );
 }
+

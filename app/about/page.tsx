@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Code2, Database, Palette, Github, Linkedin, Wrench } from "lucide-react"
+import { GitHubContributions } from "@/components/github-contributions"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -127,6 +128,21 @@ export default function About() {
               </motion.div>
             ))}
           </div>
+        </motion.section>
+
+        {/* GitHub Contributions Section */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mb-20 border-t border-border pt-20"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-8">Coding Activity</h2>
+          <p className="text-muted-foreground max-w-2xl mb-6">
+            I try to commit and build something almost every day. Here&apos;s a snapshot of my recent GitHub activity.
+          </p>
+          <GitHubContributions username="Lawrence1719" />
         </motion.section>
 
         {/* Experience Section */}
