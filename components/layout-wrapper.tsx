@@ -3,6 +3,7 @@
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
+import { TerminalFloatingButton } from "@/components/terminal";
 import { usePathname } from "next/navigation";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <Navigation />
       <main className="min-h-screen">{children}</main>
       <Footer />
+      <TerminalFloatingButton />
       <Toaster />
     </>
   );
