@@ -243,7 +243,7 @@ function Terminal({
         triggerShake();
         return (
           <pre className="text-red-400 font-mono text-xs whitespace-pre-wrap">
-{`⚠️  nice try.
+            {`⚠️  nice try.
 permission denied: /dev/portfolio
 hint: try \"hack\" or the konami code`}
           </pre>
@@ -253,7 +253,7 @@ hint: try \"hack\" or the konami code`}
       if (base === "help" || base === "?") {
         return (
           <pre className="text-muted-foreground font-mono text-xs whitespace-pre-wrap">
-{`whoami        → Your bio
+            {`whoami        → Your bio
 stack         → Tech stack
 projects      → Fetch from Supabase
 experience    → Your journey
@@ -377,7 +377,7 @@ help          → This menu`}
           const langList = s.topLanguages.map((l) => l.name).join(", ");
           return (
             <pre className="text-muted-foreground font-mono text-xs whitespace-pre-wrap">
-{`@${s.username}
+              {`@${s.username}
 contributions: ${s.totalContributions}
 streak:        ${s.currentStreak} days
 daily avg:     ${s.dailyAverage}
@@ -485,6 +485,11 @@ active repo:   ${s.mostActiveRepo?.name ?? "—"}`}
   );
 }
 
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
+
+// ... (Terminal component remains the same, we simply reuse it)
+
 export function TerminalModal({
   open,
   onOpenChange,
@@ -492,94 +497,80 @@ export function TerminalModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [dragState, setDragState] = useState<{
-    startX: number;
-    startY: number;
-    startOffsetX: number;
-    startOffsetY: number;
-  } | null>(null);
+  const dragControls = useDragControls();
+  const [mounted, setMounted] = useState(false);
 
-  // Reset position when modal opens or closes
   useEffect(() => {
-    if (open) {
-      // Reset to center when opening
-      setOffset({ x: 0, y: 0 });
-      setDragState(null);
-    } else {
-      // Clear drag state when closing
-      setDragState(null);
-    }
-  }, [open]);
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
-  // Window mouse move/up during drag
+  // Handle ESC key
   useEffect(() => {
-    if (!dragState) return;
-    const onMove = (e: MouseEvent) => {
-      setOffset({
-        x: dragState.startOffsetX + (e.clientX - dragState.startX),
-        y: dragState.startOffsetY + (e.clientY - dragState.startY),
-      });
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
     };
-    const onUp = () => setDragState(null);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-    };
-  }, [dragState]);
+    if (open) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [open, onOpenChange]);
 
-  const onTitleBarMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if (contentRef.current == null) return;
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Use the current offset state as the starting point
-      setDragState({
-        startX: e.clientX,
-        startY: e.clientY,
-        startOffsetX: offset.x,
-        startOffsetY: offset.y,
-      });
+  const onTitleBarPointerDown = useCallback(
+    (e: React.PointerEvent | React.MouseEvent) => {
+      // @ts-ignore - Framer motion types can be strict, but passing the React event works
+      dragControls.start(e);
     },
-    [offset.x, offset.y]
+    [dragControls]
   );
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        ref={contentRef}
-        className="max-w-4xl w-[min(95vw,1100px)] max-h-[85vh] p-0 gap-0 overflow-hidden flex flex-col"
-        showCloseButton={true}
-        onPointerDownOutside={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-        style={
-          offset.x === 0 && offset.y === 0
-            ? undefined
-            : {
-                transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
-              }
-        }
-      >
-        <DialogHeader className="sr-only">
-          <DialogTitle>Terminal</DialogTitle>
-        </DialogHeader>
-        <Terminal
-          isInModal
-          onExit={() => onOpenChange(false)}
-          onTitleBarMouseDown={onTitleBarMouseDown}
-        />
-      </DialogContent>
-    </Dialog>
+  if (!mounted) return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => onOpenChange(false)}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+          />
+
+          {/* Draggable Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              drag
+              dragControls={dragControls}
+              dragListener={false} // Only drag when controls are started
+              dragMomentum={false} // Prevents "sliding" after release, feels more like a window
+              dragElastic={0.1}
+              // pointer-events-auto needed because parent is pointer-events-none (to allow clicking through to backdrop)
+              className="pointer-events-auto relative w-[min(95vw,1100px)] max-h-[85vh] flex flex-col rounded-lg border bg-background shadow-lg overflow-hidden"
+            >
+              <Terminal
+                isInModal
+                onExit={() => onOpenChange(false)}
+                // We pass our handler to the TitleBar's onMouseDown prop.
+                // Note: Terminal uses onMouseDown, but framer controls start with PointerEvent or MouseEvent.
+                // We cast or standardise in the handler.
+                onTitleBarMouseDown={onTitleBarPointerDown}
+              />
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }
 
 export function TerminalFloatingButton() {
   const [open, setOpen] = useState(false);
-
   return (
     <>
       <button
