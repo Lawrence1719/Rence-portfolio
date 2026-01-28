@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ThemeToggle } from "./theme-toggle"
+import { TerminalButton } from "./terminal-button"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
@@ -50,6 +51,7 @@ export function Navigation() {
               </motion.div>
             )
           })}
+          <TerminalButton />
         </div>
 
         {/* Desktop Theme Toggle */}

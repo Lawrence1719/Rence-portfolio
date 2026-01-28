@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useKonami } from "@/lib/konami-context";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Project } from "@/lib/types/project";
 
 type OutputLine = { type: "input"; text: string } | { type: "output"; content: React.ReactNode };
@@ -155,21 +157,12 @@ function Terminal({
   const [loading, setLoading] = useState(false);
   const [chatMode, setChatMode] = useState(false);
   const [shake, setShake] = useState(false);
-  const [secretTheme, setSecretTheme] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { setTheme } = useTheme();
   const router = useRouter();
   const konamiIndexRef = useRef(0);
-
-  // Apply/remove secret theme class on <html>
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("konami-theme", secretTheme);
-    return () => {
-      root.classList.remove("konami-theme");
-    };
-  }, [secretTheme]);
+  const { secretTheme, toggleSecretTheme } = useKonami();
 
   const scrollToBottom = useCallback(() => {
     scrollRef.current?.scrollTo({
@@ -218,7 +211,7 @@ function Terminal({
         konamiIndexRef.current += 1;
         if (konamiIndexRef.current >= seq.length) {
           konamiIndexRef.current = 0;
-          setSecretTheme((v) => !v);
+          toggleSecretTheme();
           appendOutput(
             <span className="text-green-400">
               Konami code accepted. {secretTheme ? "Secret theme disabled." : "Secret theme unlocked."}
@@ -229,7 +222,7 @@ function Terminal({
         konamiIndexRef.current = 0;
       }
     },
-    [appendOutput, secretTheme],
+    [appendOutput, secretTheme, toggleSecretTheme],
   );
 
   const runCommand = useCallback(
@@ -253,13 +246,13 @@ hint: try \"hack\" or the konami code`}
       if (base === "help" || base === "?") {
         return (
           <pre className="text-muted-foreground font-mono text-xs whitespace-pre-wrap">
-            {`whoami        → Your bio
+            {`whoami        → My bio
 stack         → Tech stack
-projects      → Fetch from Supabase
-experience    → Your journey
+projects      → My projects
+experience    → My journey
 theme dark    → Dark mode
 theme light   → Light mode
-stats         → GitHub stats (live)
+stats         → GitHub stats
 chat          → Chatbot mode
 clear, cls    → Clear terminal
 exit, quit    → Close terminal
@@ -279,7 +272,7 @@ help          → This menu`}
       }
 
       // Hidden command (not listed in help)
-      if (base === "login") {
+      if (base === "admin-login") {
         onExit?.();
         router.push("/login");
         return null;
@@ -475,7 +468,7 @@ active repo:   ${s.mostActiveRepo?.name ?? "—"}`}
             onKeyDown={onInputKeyDown}
             disabled={loading}
             placeholder={loading ? "Loading..." : "Enter command (help for list)"}
-            className="flex-1 min-w-0 bg-transparent border-none outline-none font-mono text-sm text-foreground placeholder:text-muted-foreground disabled:opacity-60"
+            className="flex-1 min-w-0 bg-transparent border-none outline-none font-mono text-sm text-foreground placeholder:text-muted-foreground disabled:opacity-60 terminal-input"
             autoComplete="off"
             spellCheck={false}
           />
@@ -514,6 +507,40 @@ export function TerminalModal({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [open, onOpenChange]);
 
+  // Handle keyboard shortcuts (~ or ` or Ctrl+`)
+  useEffect(() => {
+    const handleKeyboardShortcut = (e: KeyboardEvent) => {
+      // Check if user is typing in a text input field
+      const target = e.target as HTMLElement;
+      const isTextInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.contentEditable === "true";
+
+      // Skip if in text input, but allow override for terminal input
+      if (isTextInput && !target.classList.contains("terminal-input")) {
+        return;
+      }
+
+      // Tilde or backtick
+      if (e.key === "~" || e.key === "`") {
+        e.preventDefault();
+        onOpenChange(!open);
+        return;
+      }
+
+      // Ctrl + ` (backtick)
+      if ((e.ctrlKey || e.metaKey) && e.key === "`") {
+        e.preventDefault();
+        onOpenChange(!open);
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyboardShortcut);
+    return () => window.removeEventListener("keydown", handleKeyboardShortcut);
+  }, [open, onOpenChange]);
+
   const onTitleBarPointerDown = useCallback(
     (e: React.PointerEvent | React.MouseEvent) => {
       // @ts-ignore - Framer motion types can be strict, but passing the React event works
@@ -538,7 +565,7 @@ export function TerminalModal({
           />
 
           {/* Draggable Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none md:p-4">
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -550,7 +577,7 @@ export function TerminalModal({
               dragMomentum={false} // Prevents "sliding" after release, feels more like a window
               dragElastic={0.1}
               // pointer-events-auto needed because parent is pointer-events-none (to allow clicking through to backdrop)
-              className="pointer-events-auto relative w-[min(95vw,1100px)] max-h-[85vh] flex flex-col rounded-lg border bg-background shadow-lg overflow-hidden"
+              className="pointer-events-auto relative w-[min(95vw,1100px)] max-h-[min(90vh,85vh)] md:max-h-[85vh] flex flex-col rounded-lg border bg-background shadow-lg overflow-hidden"
             >
               <Terminal
                 isInModal
@@ -571,15 +598,26 @@ export function TerminalModal({
 
 export function TerminalFloatingButton() {
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Only show on mobile
+  if (!isMobile) return null;
+
   return (
     <>
-      <button
+      <motion.button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-primary/40 bg-background/90 backdrop-blur-md shadow-lg hover:border-primary/70 hover:bg-primary/10 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50"
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-8 right-8 z-40 flex items-center justify-center h-14 w-14 rounded-md border border-green-400/30 bg-background/95 backdrop-blur-md shadow-lg hover:border-green-400/70 hover:bg-green-400/10 transition-all focus:outline-none focus:ring-2 focus:ring-green-400/50 font-mono font-semibold terminal-button-glow"
         aria-label="Open terminal"
+        title="Open terminal (~ or ` or Ctrl+`)"
       >
-        <TerminalIcon className="h-6 w-6 text-primary" />
-      </button>
+        <div className="flex items-center justify-center leading-none gap-0.5">
+          <span className="text-green-400 text-lg">&gt;</span>
+          <span className="text-green-400 text-lg">_</span>
+        </div>
+      </motion.button>
       <TerminalModal open={open} onOpenChange={setOpen} />
     </>
   );

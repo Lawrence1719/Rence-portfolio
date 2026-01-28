@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LayoutWrapper } from "@/components/layout-wrapper"
+import { KonamiProvider } from "@/lib/konami-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,9 +26,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
+          <KonamiProvider>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+          </KonamiProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -177,6 +177,34 @@ html.konami-theme {
   --chart-3: oklch(0.78 0.2 260);
 }
 
+html.konami-theme * {
+  animation: konami-rainbow 3s infinite;
+}
+
+@keyframes konami-rainbow {
+  0% {
+    color: hsl(0, 100%, 50%);
+  }
+  16% {
+    color: hsl(60, 100%, 50%);
+  }
+  33% {
+    color: hsl(120, 100%, 50%);
+  }
+  50% {
+    color: hsl(180, 100%, 50%);
+  }
+  66% {
+    color: hsl(240, 100%, 50%);
+  }
+  83% {
+    color: hsl(300, 100%, 50%);
+  }
+  100% {
+    color: hsl(0, 100%, 50%);
+  }
+}
+
 /* Easter egg: shake effect */
 @keyframes terminal-shake {
   0% { transform: translate(0, 0); }
@@ -195,3 +223,50 @@ html.konami-theme {
 .terminal-shake {
   animation: terminal-shake 0.65s ease-in-out;
 }
+
+/* Terminal Launcher Animations */
+@keyframes terminal-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes terminal-slide-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.terminal-slide-up {
+  animation: terminal-slide-up 0.3s ease-out forwards;
+}
+
+.terminal-slide-down {
+  animation: terminal-slide-down 0.3s ease-in forwards;
+}
+
+/* Terminal Button Glow */
+@keyframes terminal-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.4), 0 0 20px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.6), 0 0 25px rgba(34, 197, 94, 0.3);
+  }
+}
+
+.terminal-button-glow {
+  animation: terminal-glow 2s ease-in-out infinite;
+}
+
+
