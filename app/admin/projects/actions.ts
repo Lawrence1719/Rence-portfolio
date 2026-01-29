@@ -306,14 +306,12 @@ export async function cleanupOldLoginAttempts(daysOld: number = 90) {
     .delete()
     .lt('attempted_at', cutoffDate.toISOString());
 
-  console.log('Cleanup result:', { data, error, deletedCount: data?.length || 0 });
+  console.log('Cleanup result:', { error });
 
   if (error) {
     console.error('Error cleaning up old login attempts:', error);
     throw new Error('Failed to cleanup old login attempts');
   }
-
-  return data;
 }
 
 export async function getLoginAttemptsStats() {
