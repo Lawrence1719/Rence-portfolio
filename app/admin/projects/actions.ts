@@ -117,36 +117,41 @@ export async function deleteProject(id: string): Promise<void> {
 export async function searchProjects(query: string, page: number = 1, limit: number = 10): Promise<{ projects: Project[], total: number }> {
   const supabase = await createClient();
 
-  // Get total count for search
-  const { count: total, error: countError } = await supabase
-    .from("projects")
-    .select("*", { count: "exact", head: true })
-    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-    .or(`tags.cs.{${query}}`);
-
-  if (countError) {
-    console.error("Error counting search results:", countError);
-    throw new Error("Failed to count search results");
-  }
-
-  // Get paginated search results
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-
-  const { data, error } = await supabase
+  // Fetch all projects to filter in-memory for robust fuzzy search
+  // limitations: less performant with huge datasets, but ideal for <1000 items
+  const { data: allProjects, error } = await supabase
     .from("projects")
     .select("*")
-    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-    .or(`tags.cs.{${query}}`)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error searching projects:", error);
+    console.error("Error fetching projects for search:", error);
     throw new Error("Failed to search projects");
   }
 
-  return { projects: data || [], total: total || 0 };
+  const searchLower = query.toLowerCase();
+
+  const filteredProjects = (allProjects || []).filter((project) => {
+    const titleMatch = project.title?.toLowerCase().includes(searchLower);
+    const descMatch = project.description?.toLowerCase().includes(searchLower);
+    const statusMatch = project.status?.toLowerCase().includes(searchLower);
+
+    // Check if ANY tag contains the search query (partial match, case-insensitive)
+    const tagsMatch = project.tags?.some((tag: string) =>
+      tag.toLowerCase().includes(searchLower)
+    );
+
+    return titleMatch || descMatch || statusMatch || tagsMatch;
+  });
+
+  const total = filteredProjects.length;
+
+  // Manual pagination
+  const from = (page - 1) * limit;
+  const to = from + limit;
+  const paginatedProjects = filteredProjects.slice(from, to);
+
+  return { projects: paginatedProjects, total };
 }
 
 export async function bulkDeleteProjects(ids: string[]): Promise<void> {
@@ -239,8 +244,8 @@ export async function logLoginAttempt(email: string, success: boolean, errorMess
     const supabase = await createClient();
 
     const ipAddress = request?.headers.get('x-forwarded-for') ||
-                     request?.headers.get('x-real-ip') ||
-                     'unknown';
+      request?.headers.get('x-real-ip') ||
+      'unknown';
 
     const userAgent = request?.headers.get('user-agent') || 'unknown';
 

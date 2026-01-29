@@ -11,5 +11,9 @@ import Link from "next/link";
 import { ProjectsPageClient } from "./components/projects-page-client";
 
 export default function AdminProjectsPage() {
-  return <ProjectsPageClient />;
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading projects...</div>}>
+      <ProjectsPageClient />
+    </Suspense>
+  );
 }

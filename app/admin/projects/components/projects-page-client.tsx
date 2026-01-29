@@ -141,15 +141,17 @@ export function ProjectsPageClient() {
         </div>
       </Card>
 
-      {/* Add Project Form */}
-      <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="space-y-4">
-          <h3 className="text-lg font-mono font-semibold text-foreground">
-            add new project
-          </h3>
-          <ProjectForm mode="create" onSuccess={fetchProjects} />
-        </div>
-      </Card>
+      {/* Add Project Form - Only show when not searching */}
+      {!searchQuery && (
+        <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm">
+          <div className="space-y-4">
+            <h3 className="text-lg font-mono font-semibold text-foreground">
+              add new project
+            </h3>
+            <ProjectForm mode="create" onSuccess={fetchProjects} />
+          </div>
+        </Card>
+      )}
 
       {/* Projects List */}
       <div className="space-y-4">
